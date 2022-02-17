@@ -1,11 +1,16 @@
 """The MyUplink integration."""
 from __future__ import annotations
 
+from http import HTTPStatus
+import logging
+
+import aiohttp
 import voluptuous as vol
 
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import CONF_CLIENT_ID, CONF_CLIENT_SECRET
+from homeassistant.const import CONF_CLIENT_ID, CONF_CLIENT_SECRET, Platform
 from homeassistant.core import HomeAssistant
+from homeassistant.exceptions import ConfigEntryAuthFailed, ConfigEntryNotReady
 from homeassistant.helpers import (
     aiohttp_client,
     config_entry_oauth2_flow,
@@ -15,6 +20,10 @@ from homeassistant.helpers.typing import ConfigType
 
 from . import api, config_flow
 from .const import DOMAIN, OAUTH2_AUTHORIZE, OAUTH2_TOKEN
+
+# print("MyUplink __init__.py after import") # funkar
+
+_LOGGER = logging.getLogger(__name__)
 
 CONFIG_SCHEMA = vol.Schema(
     {
@@ -28,9 +37,15 @@ CONFIG_SCHEMA = vol.Schema(
     extra=vol.ALLOW_EXTRA,
 )
 
-PLATFORMS = ["climate"]
+
+# TODO List the platforms that you want to support.
+# Done /B
+PLATFORMS = [Platform.CLIMATE]
+
+# print("PLATFORMS ", PLATFORMS) # funkar hit
 
 
+# Finns i Home_connect
 async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
     """Set up the MyUplink component."""
     hass.data[DOMAIN] = {}
@@ -38,6 +53,7 @@ async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
     if DOMAIN not in config:
         return True
 
+    #  OAuth2FlowHandler registers implementation
     config_flow.OAuth2FlowHandler.async_register_implementation(
         hass,
         config_entry_oauth2_flow.LocalOAuth2Implementation(
@@ -53,6 +69,7 @@ async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
     return True
 
 
+# Finns i Home_connect
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Set up MyUplink from a config entry."""
     implementation = (
@@ -62,9 +79,6 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     )
 
     session = config_entry_oauth2_flow.OAuth2Session(hass, entry, implementation)
-
-    # If using a requests-based API lib
-    hass.data[DOMAIN][entry.entry_id] = api.ConfigEntryAuth(hass, session)
 
     # If using an aiohttp-based API lib
     hass.data[DOMAIN][entry.entry_id] = api.AsyncConfigEntryAuth(

@@ -13,8 +13,6 @@ from homeassistant.helpers import config_entry_oauth2_flow
 CLIENT_ID = "1234"
 CLIENT_SECRET = "5678"
 
-print("test")
-
 
 async def test_full_flow(
     hass: HomeAssistant,
@@ -28,7 +26,7 @@ async def test_full_flow(
         "myuplink",
         {
             "myuplink": {"client_id": CLIENT_ID, "client_secret": CLIENT_SECRET},
-            "http": {"base_url": "api.myuplink.com"},
+            "http": {"base_url": "https://example.com"},
         },
     )
 
