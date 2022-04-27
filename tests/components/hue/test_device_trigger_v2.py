@@ -26,7 +26,7 @@ async def test_hue_event(hass, mock_bridge_v2, v2_resources_test_data):
 
     # Emit button update event
     btn_event = {
-        "button": {"last_event": "short_release"},
+        "button": {"last_event": "initial_press"},
         "id": "c658d3d8-a013-4b81-8ac6-78b248537e70",
         "metadata": {"control_id": 1},
         "type": "button",
@@ -62,6 +62,7 @@ async def test_get_triggers(hass, mock_bridge_v2, v2_resources_test_data, device
         "device_id": hue_wall_switch_device.id,
         "type": "battery_level",
         "entity_id": "sensor.wall_switch_with_2_controls_battery",
+        "metadata": {"secondary": True},
     }
 
     expected_triggers = [
@@ -74,6 +75,7 @@ async def test_get_triggers(hass, mock_bridge_v2, v2_resources_test_data, device
                 "unique_id": resource_id,
                 "type": event_type.value,
                 "subtype": control_id,
+                "metadata": {},
             }
             for event_type in (
                 ButtonEvent.INITIAL_PRESS,

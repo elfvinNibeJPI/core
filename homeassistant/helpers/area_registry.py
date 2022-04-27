@@ -8,13 +8,11 @@ from typing import cast
 import attr
 
 from homeassistant.core import HomeAssistant, callback
-from homeassistant.helpers import device_registry as dr, entity_registry as er
 from homeassistant.loader import bind_hass
 from homeassistant.util import slugify
 
+from . import device_registry as dr, entity_registry as er
 from .typing import UNDEFINED, UndefinedType
-
-# mypy: disallow-any-generics
 
 DATA_REGISTRY = "area_registry"
 EVENT_AREA_REGISTRY_UPDATED = "area_registry_updated"
@@ -147,7 +145,7 @@ class AreaRegistry:
 
         normalized_name = None
 
-        if name is not UNDEFINED:
+        if name is not UNDEFINED and name != old.name:
             normalized_name = normalize_area_name(name)
 
             if normalized_name != old.normalized_name and self.async_get_area_by_name(
